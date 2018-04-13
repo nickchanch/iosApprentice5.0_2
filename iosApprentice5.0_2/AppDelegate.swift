@@ -7,15 +7,44 @@
 //
 
 import UIKit
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
+    let dataModel = DataModel()
 
-
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("Received local notification in-app \(notification)")
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let navigationController = window!.rootViewController as! UINavigationController
+        let controller = navigationController.viewControllers[0] as! AllListViewController
+        controller.dataModel = dataModel
+        // Add local notifications
+        let center  = UNUserNotificationCenter.current()
+//        center.requestAuthorization(options: [.alert, .sound]) {
+//            granted, error in
+//            if granted {
+//                print("Houston, we have permission")
+//            } else {
+//                print("Permission denied")
+//            }
+//        }
+        center.delegate = self
+//        let content = UNMutableNotificationContent()
+//        content.title = "Have you completed a treatment today?"
+//        content.body = "Log it down and track your progress now!"
+//        content.sound = UNNotificationSound.default()
+//
+//        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10,
+//                                                        repeats: false)
+//        let request = UNNotificationRequest(identifier: "AS2020Notification", content: content, trigger: trigger)
+//        center.add(request)
+        
         return true
     }
 
@@ -27,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        saveData()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -39,8 +69,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        saveData()
     }
-
+    func saveData() {
+//        let navigationController = window!.rootViewController as! UINavigationController
+//        let controller = navigationController.viewControllers[0] as! AllListViewController
+//        controller.saveChecklists()
+        dataModel.saveChecklists()
+    }
 
 }
 
